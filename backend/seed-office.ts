@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
 import { Pool } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 

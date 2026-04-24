@@ -8,6 +8,9 @@ class AttendanceScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Inject the controller
+    final AttendanceController controller = Get.put(AttendanceController());
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(

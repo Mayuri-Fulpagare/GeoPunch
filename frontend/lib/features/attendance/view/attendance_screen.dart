@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:frontend/features/auth/view/login_screen.dart';
 import 'package:frontend/core/utils/app_colors.dart';
+import 'package:frontend/features/attendance/controller/attendance_controller.dart';
 
 class AttendanceScreen extends StatelessWidget {
   const AttendanceScreen({super.key});
@@ -144,7 +145,7 @@ class AttendanceScreen extends StatelessWidget {
                   const Spacer(),
                   
                   // Check In Button
-                  Container(
+                  Obx(() => Container(
                     width: double.infinity,
                     height: 64,
                     margin: const EdgeInsets.only(bottom: 40),
@@ -171,30 +172,23 @@ class AttendanceScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(32),
                         ),
                       ),
-                      icon: const Icon(Icons.fingerprint_rounded, size: 28, color: AppColors.white),
-                      label: const Text(
-                        'CHECK IN',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.white,
-                          letterSpacing: 1.5,
-                        ),
-                      ),
-                      onPressed: () {
-                        Get.snackbar(
-                          'Location Check',
-                          'Verifying GPS Accuracy...',
-                          snackPosition: SnackPosition.BOTTOM,
-                          backgroundColor: AppColors.darkSlate,
-                          colorText: AppColors.white,
-                          margin: const EdgeInsets.all(16),
-                          icon: const Icon(Icons.location_searching, color: AppColors.skyBlue),
-                        );
-                        // TODO: Implement actual location check and API call
-                      },
+                      icon: controller.isCheckingIn.value 
+                          ? const SizedBox.shrink() 
+                          : const Icon(Icons.fingerprint_rounded, size: 28, color: AppColors.white),
+                      label: controller.isCheckingIn.value 
+                          ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: AppColors.white))
+                          : const Text(
+                              'CHECK IN',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.white,
+                                letterSpacing: 1.5,
+                              ),
+                            ),
+                      onPressed: controller.isCheckingIn.value ? null : controller.checkIn,
                     ),
-                  ),
+                  )),
                 ],
               ),
             ),

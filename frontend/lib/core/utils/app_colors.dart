@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Provided color palette
-  static const Color primary = Color(0xFF6A89A7); // Muted Blue
-  static const Color lightIce = Color(0xFFBDDDFC); // Light Ice Blue
-  static const Color skyBlue = Color(0xFF88BDF2); // Sky Blue
-  static const Color darkSlate = Color(0xFF384959); // Dark Slate Blue
+  // Redesign v2.0 color palette
+  static const Color primary = Color(0xFF17B878); // Vibrant Green
+  static const Color primaryDark = Color(0xFF0F8A5A); // Darker Green for accents
+  static const Color primaryLight = Color(0xFFE2F5ED); // Light Green for backgrounds
   
-  // Additional shades based on the palette
-  static const Color background = Color(0xFFF4F7FC); // Very light grey-blue for app background
+  static const Color background = Color(0xFFF7F8FA); // App background
   static const Color white = Colors.white;
-  static const Color textPrimary = Color(0xFF384959); // Using dark slate for main text
-  static const Color textSecondary = Color(0xFF6A89A7); // Using primary for secondary text
+  static const Color black = Colors.black;
+  static const Color textPrimary = Color(0xFF111111); // Main text
+  static const Color textSecondary = Color(0xFF757575); // Secondary text
+  
+  static const Color cardShadow = Color(0x0C000000); // Subtle shadow
 }

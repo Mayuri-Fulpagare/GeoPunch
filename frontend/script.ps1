@@ -1,0 +1,11 @@
+Add-Type -AssemblyName System.Drawing
+$img = [System.Drawing.Image]::FromFile('c:\Users\dell\Desktop\GeoPunch\geopunch design\Welcome.png')
+$bmp = New-Object System.Drawing.Bitmap(375, 375)
+$graphics = [System.Drawing.Graphics]::FromImage($bmp)
+$rect = New-Object System.Drawing.Rectangle(0, 90, 375, 375)
+$destRect = New-Object System.Drawing.Rectangle(0, 0, 375, 375)
+$graphics.DrawImage($img, $destRect, $rect, [System.Drawing.GraphicsUnit]::Pixel)
+$bmp.Save('c:\Users\dell\Desktop\GeoPunch\frontend\assets\images\globe.png', [System.Drawing.Imaging.ImageFormat]::Png)
+$graphics.Dispose()
+$bmp.Dispose()
+$img.Dispose()

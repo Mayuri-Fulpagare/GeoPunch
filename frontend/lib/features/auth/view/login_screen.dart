@@ -14,7 +14,7 @@ class LoginScreen extends StatelessWidget {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [AppColors.darkSlate, AppColors.primary],
+            colors: [AppColors.primaryDark, AppColors.primary],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -30,14 +30,14 @@ class LoginScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: AppColors.white.withOpacity(0.1),
+                      color: AppColors.white.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.lightIce.withOpacity(0.3), width: 2),
+                      border: Border.all(color: AppColors.primaryLight.withValues(alpha: 0.3), width: 2),
                     ),
                     child: const Icon(
                       Icons.location_on_rounded,
                       size: 60,
-                      color: AppColors.lightIce,
+                      color: AppColors.primaryLight,
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -57,7 +57,7 @@ class LoginScreen extends StatelessWidget {
                     'Precision Location Attendance',
                     style: TextStyle(
                       fontSize: 16,
-                      color: AppColors.lightIce.withOpacity(0.8),
+                      color: AppColors.primaryLight.withValues(alpha: 0.8),
                       letterSpacing: 0.5,
                     ),
                   ),
@@ -70,7 +70,7 @@ class LoginScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
+                          color: Colors.black.withValues(alpha: 0.2),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -85,7 +85,7 @@ class LoginScreen extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.darkSlate,
+                            color: AppColors.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -142,14 +142,14 @@ class LoginScreen extends StatelessWidget {
                           height: 56,
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
-                              colors: [AppColors.skyBlue, AppColors.primary],
+                              colors: [AppColors.primaryDark, AppColors.primary],
                               begin: Alignment.centerLeft,
                               end: Alignment.centerRight,
                             ),
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.skyBlue.withOpacity(0.4),
+                                color: AppColors.primaryDark.withValues(alpha: 0.4),
                                 blurRadius: 12,
                                 offset: const Offset(0, 6),
                               ),

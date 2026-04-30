@@ -20,7 +20,7 @@ class GeoPunchApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(
           seedColor: AppColors.primary,
           primary: AppColors.primary,
-          secondary: AppColors.skyBlue,
+          secondary: AppColors.primaryLight,
           surface: AppColors.white,
           onSurface: AppColors.textPrimary,
         ),
@@ -36,11 +36,11 @@ class GeoPunchApp extends StatelessWidget {
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: AppColors.lightIce.withOpacity(0.5), width: 1),
+            borderSide: BorderSide(color: AppColors.primaryLight.withValues(alpha: 0.5), width: 1),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color: AppColors.skyBlue, width: 2),
+            borderSide: const BorderSide(color: AppColors.primary, width: 2),
           ),
           labelStyle: const TextStyle(color: AppColors.textSecondary),
           prefixIconColor: AppColors.primary,

@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/core/services/location_service.dart';
 import 'package:frontend/core/api/api_client.dart';
+import 'package:dio/dio.dart';
 
 class AttendanceController extends GetxController {
   final LocationService _locationService = LocationService();
@@ -49,13 +50,19 @@ class AttendanceController extends GetxController {
     } on LocationException catch (e) {
       Get.snackbar('Location Error', e.message, backgroundColor: Colors.redAccent, colorText: Colors.white);
     } catch (e) {
-      // Dio errors (e.g. 400 Bad Request if too far away)
       String errorMsg = 'Failed to check in';
-      if (e is Exception && e.toString().contains('400')) {
+      if (e is DioException && e.response?.data != null) {
+        final data = e.response!.data;
+        if (data['message'] is List) {
+          errorMsg = data['message'].join(', ');
+        } else if (data['message'] != null) {
+          errorMsg = data['message'].toString();
+        }
+      } else if (e is Exception && e.toString().contains('400')) {
         errorMsg = 'You are too far from the office or already checked in.';
       }
-      Get.snackbar('Error', errorMsg, backgroundColor: Colors.redAccent, colorText: Colors.white);
-      print(e);
+      Get.snackbar('Error', errorMsg, backgroundColor: Colors.redAccent, colorText: Colors.white, duration: const Duration(seconds: 4));
+      debugPrint(e.toString());
     } finally {
       isCheckingIn.value = false;
     }

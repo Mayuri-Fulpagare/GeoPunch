@@ -37,8 +37,10 @@ class LocationService {
     
     for (int i = 0; i < 3; i++) {
       Position pos = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.best,
-        timeLimit: const Duration(seconds: 10),
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.best,
+          timeLimit: Duration(seconds: 10),
+        ),
       );
       
       // Accuracy Filter: Reject if accuracy is worse than 20 meters

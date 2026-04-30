@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:frontend/features/attendance/view/attendance_screen.dart';
 import 'package:frontend/core/api/api_client.dart';
 import 'package:frontend/features/attendance/controller/attendance_controller.dart';
+import 'package:dio/dio.dart';
 
 class AuthController extends GetxController {
   final emailController = TextEditingController();
@@ -40,9 +41,18 @@ class AuthController extends GetxController {
         Get.offAll(() => const AttendanceScreen());
       }
     } catch (e) {
-      Get.snackbar('Login Failed', 'Invalid credentials or server error', 
-          backgroundColor: Colors.redAccent, colorText: Colors.white);
-      print(e);
+      String errorMsg = 'Invalid credentials or server error';
+      if (e is DioException && e.response?.data != null) {
+        final data = e.response!.data;
+        if (data['message'] is List) {
+          errorMsg = data['message'].join(', ');
+        } else if (data['message'] != null) {
+          errorMsg = data['message'].toString();
+        }
+      }
+      Get.snackbar('Login Failed', errorMsg, 
+          backgroundColor: Colors.redAccent, colorText: Colors.white, duration: const Duration(seconds: 4));
+      debugPrint(e.toString());
     } finally {
       isLoading.value = false;
     }

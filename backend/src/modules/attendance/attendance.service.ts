@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CheckInDto, CheckOutDto } from './dto/attendance.dto';
 import { calculateDistance } from '../../common/utils/geo.util';
@@ -10,7 +14,9 @@ export class AttendanceService {
   async checkIn(dto: CheckInDto) {
     // 1. Validate Accuracy
     if (dto.accuracy > 20) {
-      throw new BadRequestException('GPS accuracy is too low. Move to a clearer area.');
+      throw new BadRequestException(
+        'GPS accuracy is too low. Move to a clearer area.',
+      );
     }
 
     // 2. Fetch Office Location
@@ -24,13 +30,17 @@ export class AttendanceService {
 
     // 3. Calculate distance using Haversine
     const distanceInMeters = calculateDistance(
-      dto.latitude, dto.longitude,
-      office.latitude, office.longitude,
+      dto.latitude,
+      dto.longitude,
+      office.latitude,
+      office.longitude,
     );
 
     // 4. Check if within allowed radius
     if (distanceInMeters > office.radius) {
-      throw new BadRequestException(`You are ${distanceInMeters.toFixed(1)}m away. You must be within ${office.radius}m of the office.`);
+      throw new BadRequestException(
+        `You are ${distanceInMeters.toFixed(1)}m away. You must be within ${office.radius}m of the office.`,
+      );
     }
 
     // 5. Check if already checked in today (prevent duplicate check-ins)
@@ -45,7 +55,9 @@ export class AttendanceService {
     });
 
     if (existingAttendance && !existingAttendance.checkOutTime) {
-      throw new BadRequestException('You are already checked in. Please check out first.');
+      throw new BadRequestException(
+        'You are already checked in. Please check out first.',
+      );
     }
 
     // 6. Record Attendance
@@ -60,7 +72,11 @@ export class AttendanceService {
       },
     });
 
-    return { message: 'Check-in successful', distance: distanceInMeters, attendance };
+    return {
+      message: 'Check-in successful',
+      distance: distanceInMeters,
+      attendance,
+    };
   }
 
   async checkOut(dto: CheckOutDto) {
@@ -90,6 +106,10 @@ export class AttendanceService {
       },
     });
 
-    return { message: 'Check-out successful', workingHours, attendance: updated };
+    return {
+      message: 'Check-out successful',
+      workingHours,
+      attendance: updated,
+    };
   }
 }

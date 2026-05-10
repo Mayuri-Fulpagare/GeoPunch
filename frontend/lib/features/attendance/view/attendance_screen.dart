@@ -1,461 +1,353 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:frontend/features/auth/view/login_screen.dart';
 import 'package:frontend/core/utils/app_colors.dart';
 import 'package:frontend/features/attendance/controller/attendance_controller.dart';
+import 'package:frontend/core/widgets/swipe_button.dart';
+import 'package:intl/intl.dart';
 
-class AttendanceScreen extends StatelessWidget {
+class AttendanceScreen extends StatefulWidget {
   const AttendanceScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Inject the controller
-    final AttendanceController controller = Get.put(AttendanceController());
+  State<AttendanceScreen> createState() => _AttendanceScreenState();
+}
 
+class _AttendanceScreenState extends State<AttendanceScreen> {
+  final AttendanceController controller = Get.put(AttendanceController());
+  
+  // Example company coordinates (Nashik Road, Maharashtra)
+  final LatLng companyLocation = const LatLng(19.9535, 73.8340); 
+  
+  int _selectedIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      floatingActionButton: Container(
-        height: 64,
-        width: 64,
-        margin: const EdgeInsets.only(top: 30),
-        child: FloatingActionButton(
-          backgroundColor: AppColors.black,
-          elevation: 4,
-          shape: const CircleBorder(),
-          onPressed: () {},
-          child: const Icon(Icons.add, color: AppColors.white, size: 32),
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 12,
-        color: AppColors.white,
-        elevation: 10,
-        child: SizedBox(
-          height: 60,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+      backgroundColor: AppColors.white,
+      body: Stack(
+        children: [
+          // 1. Full Screen Map
+          FlutterMap(
+            options: MapOptions(
+              initialCenter: companyLocation,
+              initialZoom: 16.5,
+              interactionOptions: const InteractionOptions(
+                flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+              ),
+            ),
             children: [
-              IconButton(
-                icon: const Icon(Icons.home_filled, color: AppColors.primary, size: 28),
-                onPressed: () {},
+              TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'com.example.geopunch',
               ),
-              IconButton(
-                icon: const Icon(Icons.search, color: AppColors.textSecondary, size: 28),
-                onPressed: () {},
-              ),
-              const SizedBox(width: 48), // Space for FAB
-              IconButton(
-                icon: const Icon(Icons.calendar_month_outlined, color: AppColors.textSecondary, size: 28),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: const Icon(Icons.person_outline, color: AppColors.textSecondary, size: 28),
-                onPressed: () {
-                  // For testing, let's keep the logout functionality on the profile icon
-                  Get.offAll(() => const LoginScreen());
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Top Header
-              Row(
-                children: [
-                  const CircleAvatar(
-                    radius: 28,
-                    backgroundColor: AppColors.primaryLight,
-                    child: Icon(Icons.person, color: AppColors.primary, size: 32),
-                  ),
-                  const SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Welcome,',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                      const Text(
-                        'Priya R.',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Container(
-                            width: 8,
-                            height: 8,
-                            decoration: const BoxDecoration(
-                              color: AppColors.primary,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          const Text(
-                            'Within Geo-fence - Ready to Punch',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+              CircleLayer(
+                circles: [
+                  CircleMarker(
+                    point: companyLocation,
+                    color: AppColors.primary.withValues(alpha: 0.15),
+                    borderColor: AppColors.primary,
+                    borderStrokeWidth: 2,
+                    useRadiusInMeter: true,
+                    radius: 100, // 100 meters geo-fence radius
                   ),
                 ],
               ),
-              
-              const SizedBox(height: 40),
-              
-              // Pulse Button Section
-              Center(
-                child: Column(
-                  children: [
-                    Stack(
-                      alignment: Alignment.center,
+              MarkerLayer(
+                markers: [
+                  // Company Marker
+                  Marker(
+                    point: companyLocation,
+                    width: 60,
+                    height: 60,
+                    child: const Icon(
+                      Icons.location_on,
+                      color: AppColors.primary,
+                      size: 48,
+                    ),
+                  ),
+                  // User Location mock marker (simulating nearby location)
+                  Marker(
+                    point: const LatLng(19.9538, 73.8342),
+                    width: 24,
+                    height: 24,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.blueAccent,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 3),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.2),
+                            blurRadius: 6,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          
+          // 2. Top Bar Overlay
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Get.offAll(() => const LoginScreen());
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.black.withValues(alpha: 0.1),
+                            blurRadius: 10,
+                          ),
+                        ],
+                      ),
+                      child: const Icon(Icons.logout, color: AppColors.black),
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.black.withValues(alpha: 0.1),
+                          blurRadius: 10,
+                        ),
+                      ],
+                    ),
+                    child: Row(
                       children: [
-                        SizedBox(
-                          width: 220,
-                          height: 220,
-                          child: CircularProgressIndicator(
-                            value: 0.65,
-                            strokeWidth: 16,
-                            backgroundColor: AppColors.primaryLight,
-                            color: AppColors.primary,
-                            strokeCap: StrokeCap.round,
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: Colors.green,
+                            shape: BoxShape.circle,
                           ),
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            if (!controller.isCheckingIn.value) {
-                              controller.checkIn();
-                            }
-                          },
-                          child: Container(
-                            width: 150,
-                            height: 150,
-                            decoration: BoxDecoration(
-                              color: AppColors.primary,
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.primary.withValues(alpha: 0.3),
-                                  blurRadius: 24,
-                                  offset: const Offset(0, 12),
-                                ),
-                              ],
-                            ),
-                            child: Center(
-                              child: Obx(() => controller.isCheckingIn.value
-                                  ? const CircularProgressIndicator(color: AppColors.white)
-                                  : const Text(
-                                      'Pulse',
-                                      style: TextStyle(
-                                        color: AppColors.white,
-                                        fontSize: 28,
-                                        fontWeight: FontWeight.bold,
-                                        letterSpacing: 1.2,
-                                      ),
-                                    )),
-                            ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'Within Range',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: AppColors.black,
                           ),
                         ),
                       ],
                     ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          
+          // 3. Bottom Sheet Overlay
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+              decoration: const BoxDecoration(
+                color: AppColors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 20,
+                    offset: Offset(0, -5),
+                  ),
+                ],
+              ),
+              child: SafeArea(
+                top: false,
+                bottom: false,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
                     const SizedBox(height: 24),
-                    const Text(
-                      '4h 24m',
-                      style: TextStyle(
-                        fontSize: 32,
+                    // Live Time Clock could be implemented here, static for now
+                    Text(
+                      DateFormat('hh:mm a').format(DateTime.now()),
+                      style: const TextStyle(
+                        fontSize: 40,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.textPrimary,
+                        color: AppColors.black,
+                        letterSpacing: -1,
                       ),
                     ),
-                    const Text(
-                      '8h 00m Shift',
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: AppColors.textSecondary,
+                    const SizedBox(height: 4),
+                    Text(
+                      DateFormat('EEEE, dd MMMM').format(DateTime.now()),
+                      style: const TextStyle(
+                        fontSize: 16,
                         fontWeight: FontWeight.w500,
+                        color: AppColors.textSecondary,
                       ),
                     ),
+                    const SizedBox(height: 32),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Obx(() => _buildTimeStat(
+                            'Punch In', 
+                            controller.checkInTime.value != null 
+                                ? DateFormat('hh:mm a').format(controller.checkInTime.value!) 
+                                : '--:--', 
+                            Icons.login
+                          )),
+                        ),
+                        Container(
+                          width: 1,
+                          height: 40,
+                          color: Colors.grey[200],
+                        ),
+                        Expanded(
+                          child: Obx(() => _buildTimeStat(
+                            'Punch Out', 
+                            controller.checkOutTime.value != null 
+                                ? DateFormat('hh:mm a').format(controller.checkOutTime.value!) 
+                                : '--:--', 
+                            Icons.logout
+                          )),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 32),
+                    Obx(
+                      () => SwipeButton(
+                        text: controller.isCheckingIn.value 
+                            ? 'Processing...' 
+                            : (controller.isPunchedIn.value ? 'Swipe to Punch Out' : 'Swipe to Punch In'),
+                        isLoading: controller.isCheckingIn.value,
+                        onSwipe: () {
+                          if (controller.isPunchedIn.value) {
+                            controller.checkOut();
+                          } else {
+                            controller.checkIn();
+                          }
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 16),
                   ],
                 ),
               ),
-              
-              const SizedBox(height: 36),
-              
-              // Stats Cards Row
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildStatCard(
-                      icon: Icons.schedule,
-                      title: 'Daily Status',
-                      mainValue: '04:24 AM',
-                      subValue: 'Break: 30m',
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: AppColors.white,
-                        borderRadius: BorderRadius.circular(24),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: AppColors.cardShadow,
-                            blurRadius: 16,
-                            offset: Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: const [
-                              Icon(Icons.calendar_today_outlined, size: 16, color: AppColors.textSecondary),
-                              SizedBox(width: 6),
-                              Text(
-                                'Shift Plan',
-                                style: TextStyle(
-                                  color: AppColors.textSecondary,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          const Text(
-                            '09:00 - 17:30',
-                            style: TextStyle(
-                              color: AppColors.textPrimary,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          const Text(
-                            'Mon - Fri',
-                            style: TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 13,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              _buildBar(0.4),
-                              _buildBar(0.7),
-                              _buildBar(1.0),
-                              _buildBar(0.8),
-                              _buildBar(0.5),
-                              _buildBar(0.3, isLight: true),
-                              _buildBar(0.3, isLight: true),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              
-              const SizedBox(height: 36),
-              
-              // Recent Activity Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  Text(
-                    'Recent Activity',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  Text(
-                    'Last 5 punches',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: AppColors.textSecondary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-              
-              const SizedBox(height: 16),
-              
-              // Activity List
-              _buildActivityItem(
-                isPunchIn: true,
-                time: '08:32',
-                location: 'Main Gate - Auto',
-                date: 'Today',
-              ),
-              const SizedBox(height: 12),
-              _buildActivityItem(
-                isPunchIn: false,
-                time: '17:30',
-                location: 'HQ - Auto',
-                date: 'Yesterday',
-              ),
-              const SizedBox(height: 40), // Extra space for bottom nav
-            ],
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.black.withValues(alpha: 0.05),
+              blurRadius: 20,
+              offset: const Offset(0, -5),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+            child: BottomNavigationBar(
+              elevation: 0,
+              backgroundColor: AppColors.white,
+              type: BottomNavigationBarType.fixed,
+              showSelectedLabels: true,
+              showUnselectedLabels: true,
+              selectedItemColor: AppColors.primary,
+              unselectedItemColor: AppColors.textSecondary.withValues(alpha: 0.6),
+              selectedFontSize: 12,
+              unselectedFontSize: 12,
+              selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600, height: 1.5),
+              unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, height: 1.5),
+              currentIndex: _selectedIndex,
+              onTap: (index) {
+                setState(() {
+                  _selectedIndex = index;
+                });
+              },
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home_rounded),
+                  activeIcon: Icon(Icons.home_rounded, size: 26),
+                  label: 'Home',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.calendar_month_rounded),
+                  activeIcon: Icon(Icons.calendar_month_rounded, size: 26),
+                  label: 'Calendar',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.notifications_rounded),
+                  activeIcon: Icon(Icons.notifications_rounded, size: 26),
+                  label: 'Alerts',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.person_rounded),
+                  activeIcon: Icon(Icons.person_rounded, size: 26),
+                  label: 'Profile',
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildStatCard({required IconData icon, required String title, required String mainValue, required String subValue}) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: const [
-          BoxShadow(
-            color: AppColors.cardShadow,
-            blurRadius: 16,
-            offset: Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, size: 16, color: AppColors.textSecondary),
-              const SizedBox(width: 6),
-              Text(
-                title,
-                style: const TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
+  Widget _buildTimeStat(String label, String time, IconData icon) {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 16, color: AppColors.textSecondary),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: const TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 14,
               ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            mainValue,
-            style: const TextStyle(
-              color: AppColors.textPrimary,
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
             ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          time,
+          style: const TextStyle(
+            color: AppColors.black,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
           ),
-          const SizedBox(height: 6),
-          Text(
-            subValue,
-            style: const TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: 13,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBar(double heightFactor, {bool isLight = false}) {
-    return Container(
-      width: 8,
-      height: 24 * heightFactor,
-      decoration: BoxDecoration(
-        color: isLight ? AppColors.primaryLight : AppColors.primary,
-        borderRadius: BorderRadius.circular(4),
-      ),
-    );
-  }
-
-  Widget _buildActivityItem({required bool isPunchIn, required String time, required String location, required String date}) {
-    final Color iconColor = isPunchIn ? AppColors.primary : const Color(0xFFF59E0B);
-    final Color bgColor = isPunchIn ? AppColors.primaryLight : const Color(0xFFFEF3C7);
-    final IconData icon = isPunchIn ? Icons.login_rounded : Icons.logout_rounded;
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: const [
-          BoxShadow(
-            color: AppColors.cardShadow,
-            blurRadius: 12,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: bgColor,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: iconColor, size: 20),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Punch ${isPunchIn ? 'In' : 'Out'} - $time',
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  location,
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 13,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Text(
-            date,
-            style: const TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

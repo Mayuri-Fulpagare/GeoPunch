@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -29,24 +34,31 @@ export class AuthService {
     });
 
     const token = this.jwtService.sign({ sub: user.id, email: user.email });
-    return { access_token: token, user: { id: user.id, name: user.name, email: user.email } };
+    return {
+      access_token: token,
+      user: { id: user.id, name: user.name, email: user.email },
+    };
   }
 
   async login(dto: LoginDto) {
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
-    
+
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new NotFoundException('User not found');
     }
 
-    const isPasswordValid = await bcrypt.compare(dto.password, user.passwordHash);
+    const isPasswordValid = await bcrypt.compare(
+      dto.password,
+      user.passwordHash,
+    );
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Invalid password');
     }
 
     const token = this.jwtService.sign({ sub: user.id, email: user.email });
+    // eslint-disable-next-line prettier/prettier
     return { access_token: token, user: { id: user.id, name: user.name, email: user.email } };
   }
 }

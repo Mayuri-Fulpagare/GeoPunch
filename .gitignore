@@ -62,3 +62,27 @@ DerivedData
 
 # Generated files
 generated/
+
+# Prisma
+/geopunch_api/generated/prisma
+
+# Flutter specifics
+**/*.class
+*.pyc
+.DS_Store
+.build/
+.buildlog/
+.history
+migrate_working_dir/
+*.iml
+*.ipr
+*.iws
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.pub-cache/
+/geopunch_app/coverage/
+app.*.symbols
+app.*.map.json
+/geopunch_app/android/app/debug
+/geopunch_app/android/app/profile
+/geopunch_app/android/app/release

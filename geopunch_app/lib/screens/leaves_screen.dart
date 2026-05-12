@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_colors.dart';
+import 'package:intl/intl.dart';
 
 class LeavesScreen extends StatefulWidget {
   const LeavesScreen({super.key});
@@ -216,6 +217,32 @@ class _ApplyLeaveBottomSheet extends StatefulWidget {
 class _ApplyLeaveBottomSheetState extends State<_ApplyLeaveBottomSheet> {
   String _selectedType = 'Casual Leave';
   final _reasonController = TextEditingController();
+  DateTimeRange? _selectedDateRange;
+
+  Future<void> _pickDateRange() async {
+    final DateTimeRange? picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: AppColors.black, // header background color
+              onPrimary: AppColors.white, // header text color
+              onSurface: AppColors.textPrimary, // body text color
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() {
+        _selectedDateRange = picked;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -266,21 +293,32 @@ class _ApplyLeaveBottomSheetState extends State<_ApplyLeaveBottomSheet> {
           ),
           const SizedBox(height: 20),
 
-          // Date Selection placeholder
+          // Date Selection
           const Text('Select Dates', style: TextStyle(fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
           const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey[300]!),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Tap to select dates', style: TextStyle(color: AppColors.textSecondary)),
-                Icon(Icons.calendar_today, size: 18, color: AppColors.textSecondary),
-              ],
+          GestureDetector(
+            onTap: _pickDateRange,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey[300]!),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    _selectedDateRange == null 
+                        ? 'Tap to select dates' 
+                        : '${DateFormat('dd MMM').format(_selectedDateRange!.start)} - ${DateFormat('dd MMM yyyy').format(_selectedDateRange!.end)}',
+                    style: TextStyle(
+                      color: _selectedDateRange == null ? AppColors.textSecondary : AppColors.textPrimary,
+                      fontWeight: _selectedDateRange == null ? FontWeight.normal : FontWeight.w600,
+                    ),
+                  ),
+                  const Icon(Icons.calendar_today, size: 18, color: AppColors.textSecondary),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 20),

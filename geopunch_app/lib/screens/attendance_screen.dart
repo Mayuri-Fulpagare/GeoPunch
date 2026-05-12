@@ -9,6 +9,7 @@ import 'package:frontend/component/swipe_button.dart';
 import 'package:intl/intl.dart';
 import 'package:frontend/screens/calendar_screen.dart';
 import 'package:frontend/screens/leaves_screen.dart';
+import 'package:frontend/screens/profile_screen.dart';
 
 class AttendanceScreen extends StatefulWidget {
   const AttendanceScreen({super.key});
@@ -35,7 +36,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
           _buildMapHome(),
           const CalendarScreen(),
           const LeavesScreen(),
-          const Center(child: Text('Profile (Coming Soon)', style: TextStyle(color: AppColors.textPrimary, fontSize: 18))),
+          const ProfileScreen(),
         ],
       ),
       bottomNavigationBar: Container(

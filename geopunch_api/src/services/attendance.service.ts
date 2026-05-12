@@ -3,9 +3,9 @@ import {
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
-import { CheckInDto, CheckOutDto } from './dto/attendance.dto';
-import { calculateDistance } from '../../common/utils/geo.util';
+import { PrismaService } from './prisma.service';
+import { CheckInDto, CheckOutDto } from '../validators/attendance.dto';
+import { calculateDistance } from '../utils/geo.util';
 
 @Injectable()
 export class AttendanceService {

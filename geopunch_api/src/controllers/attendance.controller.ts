@@ -1,6 +1,6 @@
 import { Controller, Post, Body } from '@nestjs/common';
-import { AttendanceService } from './attendance.service';
-import { CheckInDto, CheckOutDto } from './dto/attendance.dto';
+import { AttendanceService } from '../services/attendance.service';
+import { CheckInDto, CheckOutDto } from '../validators/attendance.dto';
 
 @Controller('api/v1/attendance')
 export class AttendanceController {

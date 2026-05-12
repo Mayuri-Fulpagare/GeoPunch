@@ -112,4 +112,36 @@ export class AttendanceService {
       attendance: updated,
     };
   }
+  async getHistory(userId: string, month: number, year: number) {
+    // Create start and end date for the query
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 1);
+
+    const history = await this.prisma.attendance.findMany({
+      where: {
+        userId,
+        checkInTime: {
+          gte: startDate,
+          lt: endDate,
+        },
+      },
+      orderBy: {
+        checkInTime: 'asc',
+      },
+    });
+
+    // Calculate summary statistics
+    const totalPresent = history.length;
+    const totalWorkingHours = history.reduce((sum, record) => sum + (record.workingHours || 0), 0);
+
+    return {
+      month,
+      year,
+      summary: {
+        totalPresent,
+        totalWorkingHours: Number(totalWorkingHours.toFixed(1)),
+      },
+      data: history,
+    };
+  }
 }

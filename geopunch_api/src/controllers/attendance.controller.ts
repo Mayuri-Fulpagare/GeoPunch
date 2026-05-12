@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query, Param } from '@nestjs/common';
 import { AttendanceService } from '../services/attendance.service';
 import { CheckInDto, CheckOutDto } from '../validators/attendance.dto';
 
@@ -14,5 +14,18 @@ export class AttendanceController {
   @Post('check-out')
   checkOut(@Body() dto: CheckOutDto) {
     return this.attendanceService.checkOut(dto);
+  }
+
+  @Get('history/:userId')
+  getHistory(
+    @Param('userId') userId: string,
+    @Query('month') month?: string,
+    @Query('year') year?: string,
+  ) {
+    return this.attendanceService.getHistory(
+      userId,
+      month ? Number(month) : new Date().getMonth() + 1,
+      year ? Number(year) : new Date().getFullYear(),
+    );
   }
 }

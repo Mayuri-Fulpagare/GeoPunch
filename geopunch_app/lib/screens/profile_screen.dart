@@ -2,21 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/screens/login_screen.dart';
+import 'package:frontend/controllers/auth_controller.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final AuthController authController = Get.find<AuthController>();
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.white,
+        backgroundColor: AppColors.black,
         elevation: 0,
         title: const Text(
           'Profile',
           style: TextStyle(
-            color: AppColors.textPrimary,
+            color: AppColors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -37,7 +40,7 @@ class ProfileScreen extends StatelessWidget {
                   BoxShadow(color: AppColors.cardShadow, blurRadius: 15, offset: Offset(0, 5)),
                 ],
               ),
-              child: Column(
+              child: Obx(() => Column(
                 children: [
                   Container(
                     width: 100,
@@ -45,43 +48,22 @@ class ProfileScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.grey[200]!, width: 4),
-                      image: const DecorationImage(
-                        image: NetworkImage('https://i.pravatar.cc/150?img=47'), // Placeholder female avatar
-                        fit: BoxFit.cover,
-                      ),
+                      color: Colors.grey[100],
                     ),
+                    child: const Icon(Icons.person, size: 60, color: Colors.grey),
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Mayuri Deshmukh',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                  Text(
+                    authController.userName.value.isNotEmpty ? authController.userName.value : 'GeoPunch User',
+                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
-                    'mayuri.d@geopunch.inc',
-                    style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: const [
-                        Icon(Icons.badge_outlined, size: 16, color: AppColors.black),
-                        SizedBox(width: 8),
-                        Text(
-                          'EMP ID: GP-2084',
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.black),
-                        ),
-                      ],
-                    ),
+                  Text(
+                    authController.userEmail.value.isNotEmpty ? authController.userEmail.value : 'user@geopunch.inc',
+                    style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
                   ),
                 ],
-              ),
+              )),
             ),
             const SizedBox(height: 24),
 

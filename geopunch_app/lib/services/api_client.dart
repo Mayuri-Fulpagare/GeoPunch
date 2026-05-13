@@ -2,8 +2,8 @@ import 'package:dio/dio.dart';
 
 class ApiClient {
   static final Dio _dio = Dio(BaseOptions(
-    // 10.247.212.96 is your computer's local Wi-Fi IP address. This works for both Emulator and Physical Phone.
-    baseUrl: 'http://10.247.212.96:3000/api/v1',
+    // 10.245.26.96 is your computer's local Wi-Fi IP address. This works for both Emulator and Physical Phone.
+    baseUrl: 'http://10.245.26.96:3000/api/v1',
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
     headers: {

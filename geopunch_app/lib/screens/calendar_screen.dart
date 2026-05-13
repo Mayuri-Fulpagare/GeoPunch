@@ -32,12 +32,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.white,
+        backgroundColor: AppColors.black,
         elevation: 0,
         title: const Text(
           'Attendance History',
           style: TextStyle(
-            color: AppColors.textPrimary,
+            color: AppColors.white,
             fontWeight: FontWeight.bold,
           ),
         ),

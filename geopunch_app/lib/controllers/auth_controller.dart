@@ -12,6 +12,8 @@ class AuthController extends GetxController {
   final passwordController = TextEditingController();
   
   var isLoading = false.obs;
+  var userName = ''.obs;
+  var userEmail = ''.obs;
 
   void register() async {
     if (nameController.text.isEmpty || emailController.text.isEmpty || passwordController.text.isEmpty) {
@@ -39,6 +41,9 @@ class AuthController extends GetxController {
         // Pre-initialize Attendance Controller and inject User ID
         final attendanceCtrl = Get.put(AttendanceController());
         attendanceCtrl.userId = userId;
+
+        userName.value = response.data['user']['name'] ?? 'User';
+        userEmail.value = response.data['user']['email'] ?? 'user@geopunch.inc';
 
         Get.snackbar('Success', 'Account created successfully!', 
             backgroundColor: Colors.green, colorText: Colors.white);
@@ -92,6 +97,9 @@ class AuthController extends GetxController {
         // Pre-initialize Attendance Controller and inject User ID
         final attendanceCtrl = Get.put(AttendanceController());
         attendanceCtrl.userId = userId;
+
+        userName.value = response.data['user']['name'] ?? 'User';
+        userEmail.value = response.data['user']['email'] ?? 'user@geopunch.inc';
 
         // Navigate to Dashboard
         nameController.clear();

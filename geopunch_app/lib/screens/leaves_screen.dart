@@ -27,12 +27,12 @@ class _LeavesScreenState extends State<LeavesScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.white,
+        backgroundColor: AppColors.black,
         elevation: 0,
         title: const Text(
           'Leaves & Holidays',
           style: TextStyle(
-            color: AppColors.textPrimary,
+            color: AppColors.white,
             fontWeight: FontWeight.bold,
           ),
         ),

@@ -83,8 +83,8 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                   label: 'Calendar',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.beach_access_rounded),
-                  activeIcon: Icon(Icons.beach_access_rounded, size: 26),
+                  icon: Icon(Icons.work_off_rounded),
+                  activeIcon: Icon(Icons.work_off_rounded, size: 26),
                   label: 'Leaves',
                 ),
                 BottomNavigationBarItem(

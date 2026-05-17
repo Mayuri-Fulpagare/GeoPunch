@@ -6,6 +6,8 @@ import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/controllers/history_controller.dart';
 import 'package:frontend/models/attendance_history_model.dart';
 import 'package:frontend/utils/pdf_export_service.dart';
+import 'package:frontend/screens/attendance_screen.dart';
+import 'package:flutter/services.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -32,13 +34,28 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: AppColors.white,
+          statusBarIconBrightness: Brightness.dark,
+        ),
         backgroundColor: AppColors.black,
         elevation: 0,
+        toolbarHeight: 65,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: AppColors.white, size: 20),
+          onPressed: () => Get.offAll(() => const AttendanceScreen()),
+        ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(24),
+          ),
+        ),
         title: const Text(
           'Attendance History',
           style: TextStyle(
             color: AppColors.white,
             fontWeight: FontWeight.bold,
+            fontSize: 20,
           ),
         ),
         centerTitle: true,

@@ -1,6 +1,7 @@
-# Environments
+# Environments (keep the example file)
 .env
 .env.*
+!.env.example
 
 # IDEs
 .idea/
@@ -20,9 +21,8 @@ node_modules/
 # Build folders
 build/
 **/build/
-backend/dist/
-frontend/dist/
 dist/
+geopunch_api/coverage/
 
 # Flutter/Dart
 .dart_tool/

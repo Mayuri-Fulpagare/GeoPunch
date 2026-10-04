@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:frontend/utils/app_theme.dart';
-import 'package:frontend/screens/splash_screen.dart';
+import 'package:geopunch_app/core/theme/app_theme.dart';
+import 'package:geopunch_app/features/auth/screens/splash_screen.dart';
 
 void main() {
   runApp(const GeoPunchApp());

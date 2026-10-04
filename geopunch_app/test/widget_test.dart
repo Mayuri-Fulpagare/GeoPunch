@@ -8,7 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:frontend/main.dart';
+import 'package:geopunch_app/main.dart';
 
 void main() {
   testWidgets('GeoPunch app builds successfully', (WidgetTester tester) async {

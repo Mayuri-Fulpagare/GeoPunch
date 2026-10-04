@@ -8,6 +8,16 @@ GeoPunch is a geo-fenced employee attendance app. Backend: NestJS + Prisma 7 + N
 
 ---
 
+## 0. Repository layout (restructured 2026-10-04)
+
+- `geopunch_api/src/modules/<feature>/` (module, controller, service, `dto/`, specs), `src/common/`, `src/prisma/`; seed at `prisma/seed.ts`; `.env.example` added; `npm run start:prod` now runs `dist/main.js` (build config fixed).
+- `geopunch_app/lib/core/` (constants, theme, network, services, widgets) and `lib/features/<feature>/` (auth, attendance, history, leaves, profile). Package renamed `frontend` to `geopunch_app`. Linux, macOS, Windows, web folders removed (Android and iOS only).
+- Conventions, rules and task skills: `AGENTS.md`, `CLAUDE.md`, `.claude/rules/`, `.claude/skills/`.
+- Behavior unchanged by the restructure. Same routes, same bugs. Flutter was not installed on the machine that did the restructure, so `flutter analyze` and `flutter test` still need a run.
+- Hello World route `GET /` removed.
+
+---
+
 ## 1. Backend (`geopunch_api`)
 
 ### Endpoints

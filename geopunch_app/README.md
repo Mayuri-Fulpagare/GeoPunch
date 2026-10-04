@@ -1,16 +1,32 @@
-# frontend
+# GeoPunch App
 
-A new Flutter project.
+Flutter (Dart ^3.9) mobile app for geo-fenced attendance. Targets Android and iOS. State and navigation via GetX, HTTP via Dio, GPS via Geolocator, maps via flutter_map.
 
-## Getting Started
+## Run
 
-This project is a starting point for a Flutter application.
+```bash
+flutter pub get
+flutter run
+```
 
-A few resources to get you started if this is your first Flutter project:
+The API base URL is currently hardcoded in `lib/core/network/api_client.dart`. Point it at your running `geopunch_api` (use your machine's LAN IP for a physical device).
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Structure
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```
+lib/
+  main.dart
+  core/                    shared, feature-independent code
+    constants/             app_colors.dart
+    theme/                 app_theme.dart
+    network/               api_client.dart (single Dio instance + token)
+    services/              location_service.dart (GPS, accuracy, mock detection)
+    widgets/               reusable widgets (swipe_button.dart)
+  features/<feature>/      auth, attendance, history, leaves, profile
+    controllers/           GetX controllers
+    screens/               full-page widgets
+    models/                data classes (when needed)
+    services/              feature-specific helpers (when needed)
+```
+
+Import with `package:geopunch_app/...`. See `../AGENTS.md` for conventions and `../summary.md` for status.

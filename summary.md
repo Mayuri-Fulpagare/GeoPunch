@@ -1,51 +1,85 @@
-# GeoPunch: Project Progress Summary
+# GeoPunch: Project Status Summary
 
-Here is a simple, detailed explanation of everything we have built for the **GeoPunch** app so far. We have successfully laid the foundation for both the "Brain" (Backend) and the "Face" (Frontend) of the application, and we have fully wired them together!
+Last updated: 2026-10-04 (from code scan of `main` @ 2684b11).
 
----
+GeoPunch is a geo-fenced employee attendance app. Backend: NestJS + Prisma 7 + Neon Postgres. Mobile: Flutter + GetX.
 
-## 1. The Backend (The Brain) ⚙️
-The backend is the server that runs in the cloud. It securely stores data and makes the final decisions (like deciding if an employee is actually at the office). We built this using **NestJS**.
-
-### What we implemented:
-* **The Architecture:** We created a modular structure. This means the code is organized into separate folders for `Auth` (Login/Logout), `Users` (Employee details), and `Attendance` (Check-in/Check-out). This makes the code clean and easy to maintain.
-* **The Database:** We connected the backend to a free cloud database called **Neon (PostgreSQL)** using Prisma v7 and its modern Postgres adapter.
-* **The Tables (Database Schema):** We created the rules for three main tables using a tool called Prisma:
-  1. **User Table:** Stores employee information (Name, Email, Password, Device ID).
-  2. **OfficeLocation Table:** Stores the exact GPS coordinates (Latitude & Longitude) of your office and the allowed check-in radius (e.g., 200 meters).
-  3. **Attendance Table:** Stores when an employee checks in and out, their exact location at that time, and how accurate their GPS signal was.
-* **The APIs:** We fully built out the logic to handle requests from the mobile app:
-  - `/register` & `/login`: Securely hashes user passwords and hands back a JWT access token.
-  - `/check-in`: Runs the **Haversine Formula** (a complex math equation to calculate distance over the curvature of the earth) to prove the user is within the required 200-meter radius of the office.
+**Overall:** login/signup and check-in work end to end. Check-out, history, leave and profile are only partly done. Backend has no auth enforcement yet.
 
 ---
 
-## 2. The Frontend (The Mobile App) 📱
-The frontend is the mobile application that the employees will install on their phones. We built this using **Flutter**.
+## 1. Backend (`geopunch_api`)
 
-### What we implemented:
-* **Clean Folder Structure:** We organized the app into features (`auth`, `attendance`) and core services (`api`, `location`). We also installed the necessary plugins: **GetX** (for moving between screens), **Dio** (for talking to the backend), and **Geolocator** (for getting GPS data).
-* **Premium UI/UX Design System:** We implemented a unified theme system (`app_colors.dart`) using your provided modern color palette (Dark Slate, Sky Blue, Muted Blue, and Light Ice). 
-* **The Login Screen:** A sleek, professional login page using gradients, soft shadows, and glowing buttons.
-* **The Dashboard Screen:** A beautiful attendance screen featuring a floating user profile, a large central "Working Hours" timer, and a massive animated Check-In button.
-* **The Core USP - Location Service:** This acts as a strict security guard before an employee can check in:
-  1. **Permissions Check:** Makes sure the user has turned on GPS.
-  2. **Fake GPS Detection:** Blocks users attempting to use a "Mock Location" spoofer app.
-  3. **Accuracy Filter:** Looks at the GPS signal. If the accuracy is worse than 20 meters, it stops the check-in immediately.
-  4. **Multi-Sample Averaging:** Instead of trusting the first GPS reading, the app takes 3 separate location readings over a few seconds, adds them together, and finds the exact average for extreme precision.
+### Endpoints
+| Method | Route | Status |
+|---|---|---|
+| POST | `/api/v1/auth/register` | Works. bcrypt hash, returns JWT + user |
+| POST | `/api/v1/auth/login` | Works. 404 unknown email, 401 wrong password |
+| POST | `/api/v1/attendance/check-in` | Works. Rejects accuracy > 20m, Haversine vs office radius, blocks double check-in |
+| POST | `/api/v1/attendance/check-out` | Coded. Needs `attendanceId`. No geofence/ownership check |
+| GET | `/api/v1/attendance/history/:userId?month&year` | Coded. Returns records + totals |
+
+No leave, profile, calendar, holiday, office or admin endpoints. No logout/refresh.
+
+### Database (Prisma)
+- `User` (role EMPLOYEE/ADMIN, `deviceId` unused), `OfficeLocation`, `Attendance` (status PRESENT/LATE/ABSENT).
+- No Leave/Holiday models. No migrations folder. `seed-office.ts` seeds one office (San Francisco, 200m).
+- Env vars needed: `DATABASE_URL`, `DIRECT_URL`, `JWT_SECRET`, `PORT`. No `.env.example`.
+
+### Gaps
+- `UsersModule`/`UsersService` empty stubs.
+- LATE status never computed. No ABSENT job.
+- Tests: only auto-generated boilerplate, no real tests.
 
 ---
 
-## 3. The Full-Stack Integration 🤝 (COMPLETED!)
-Both parts are now fully talking to each other!
-* We created an **API Client** using Dio.
-* When the user clicks **Login**, the Flutter app sends the email/password to the NestJS backend, receives a secure Token, and automatically navigates to the Dashboard.
-* When the user clicks **Check In**, the Flutter app runs the Multi-Sample Location Service to get their exact GPS position, sends it to the NestJS backend, and the backend verifies the Haversine distance. If approved, a green success banner pops up in the app showing exactly how far away from the office center the user is!
+## 2. Mobile app (`geopunch_app`)
+
+Packages: get, dio, geolocator, flutter_map, latlong2, table_calendar, intl, pdf, printing.
+
+| Screen | Status |
+|---|---|
+| Splash | UI only |
+| Login / Signup | Real API. Token in memory only, no persistence |
+| Home (map + swipe punch) | Check-in real. Map office coords hardcoded (Nashik), user marker is a fixed mock point, "Within Range" static. Logout does not clear token |
+| Calendar + PDF export | Wired to history API, but `userId` hardcoded `'mock-user-id'`, so real data never shows. Loads before login finishes |
+| Leaves | 100% mock, no API, no backend |
+| Profile | Shows name/email. Menu items do nothing |
+
+Location service: 3-sample averaging, 20m accuracy filter, mock-GPS detection (returned position then reset to `isMocked:false`).
+
+### Known bugs
+- **Check-out is fake.** App never sends `attendanceId` (not stored after check-in). Backend returns 400, app catches it and shows success anyway. Nothing persisted.
+- `officeId` hardcoded to a seeded DB value.
+- `ApiClient.baseUrl` hardcoded to LAN IP over plain HTTP. No env config.
+- Android INTERNET/location permissions not in main manifest (not verified for debug/iOS). Cleartext HTTP blocked on Android 9+ without network config.
+- Working-hours timer from design not implemented. Punch state not restored on launch.
+- Smoke widget test likely fails (plugins not mocked).
 
 ---
 
-## What is Next?
-Now that the core Minimum Viable Product (MVP) is fully functional, our next steps could be:
-1. Build the **Check-Out** functionality and calculate the total "Working Hours" for the day.
-2. Build an **Attendance History** screen in Flutter so the user can see their past check-ins.
-3. Integrate **Firebase Cloud Messaging (FCM)** to send push notifications (like "You are late!" or "Don't forget to check out!").
+## 3. Design (`geopunch design`)
+8 PNG mockups only (Form, Dashboard, Home, Welcome, login, map, notification, setting). Notification and settings screens not built.
+
+---
+
+## 4. Security issues (fix before any real use)
+1. **No JWT verification.** Tokens signed but never checked. `userId` from body/URL, so anyone can read any user's history, punch for others, or check out any record (IDOR).
+2. Client picks `officeId`; server trusts client lat/lon/accuracy. Mock-GPS check is client-side only.
+3. Open CORS, no rate limiting, login 404/401 split allows user enumeration.
+4. `auth.service.ts` logs emails and password-compare result.
+5. No hardcoded secrets found. `.env` gitignored.
+
+---
+
+## 5. Next steps (priority order)
+1. Add JWT guard + `JwtStrategy`; take `userId` from token, not request.
+2. Fix check-out: store `attendanceId` from check-in, send it, show real errors, no fake success.
+3. Fix history: use real `userId` after login, reload on tab open, support month change.
+4. Persist token (secure storage); real logout; restore punch state from server.
+5. Office-list endpoint; remove hardcoded office ID/coords; live GPS marker + real distance on map.
+6. Move base URL to env config; Android permissions + network config; iOS location strings.
+7. Leave module (backend models + endpoints, wire Flutter screen), holidays.
+8. Profile actions, settings screen, LATE/ABSENT logic, working-hours timer.
+9. FCM push notifications.
+10. Prisma migrations, `.env.example`, real tests, remove debug logging.
